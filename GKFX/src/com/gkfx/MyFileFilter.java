@@ -4,7 +4,8 @@ import java.io.File;
 
 import javax.swing.filechooser.FileFilter;
 
-public class HtmlFileFilter extends FileFilter {
+/* accept html and excel files only */
+public class MyFileFilter extends FileFilter {
 
 	private String getExtension(File f){
 		String name = f.getName();
@@ -26,7 +27,7 @@ public class HtmlFileFilter extends FileFilter {
 		// TODO Auto-generated method stub
 		String extension = getExtension(f);
 
-		if(extension.equalsIgnoreCase("html"))
+		if(extension.equalsIgnoreCase("html") || extension.equalsIgnoreCase("xlsx"))
 			return true;
 		else 
 			return false;

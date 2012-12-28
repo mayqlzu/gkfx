@@ -10,48 +10,33 @@ import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 
 
-public class FileChooser extends JFrame implements ActionListener{
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
+public class FileChooser {
 	
-	JButton button_choose_files;
-	
+	private File[] files;
 	
 	FileChooser(){
-		super("GKFX");
-		setBounds(100,100,800,600);
-		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		setVisible(true); 
-		
-		this.setLayout(new FlowLayout());
-		
-		button_choose_files = new JButton("choose files");
-		button_choose_files.addActionListener(this);
-		add(button_choose_files);
-		validate();
-
-	}
-
-	@Override
-	public void actionPerformed(ActionEvent arg0) {
 		// TODO Auto-generated method stub
-		JFileChooser file_chooser = new JFileChooser("D:/coding/gkfx");
+//		files = null;  java will init it as null automatically :)
+//		System.out.println(files);
+		
+		JFileChooser file_chooser = new JFileChooser("D:/coding/windows/gkfx");
 		file_chooser.setMultiSelectionEnabled(true);
 		file_chooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
-		file_chooser.setFileFilter(new HtmlFileFilter());
+		file_chooser.setFileFilter(new MyFileFilter());
         int returnValue = file_chooser.showOpenDialog(null);
         if (returnValue == JFileChooser.APPROVE_OPTION)
         {  
-        	File[] files = file_chooser.getSelectedFiles();
-        	System.out.println(files[0].toString());
+        	files = file_chooser.getSelectedFiles();
+        	System.out.println("file choosed: "+ files[0].toString());
+        }else{
+        	files = null;
         }
 	}
+	
+	public File[] getChoosedFiles(){
+		return files;
+	}
 
-	/**
-	 * @param args
-	 */
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
 		new FileChooser();

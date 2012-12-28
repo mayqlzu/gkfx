@@ -9,56 +9,139 @@ import org.jsoup.select.Elements;
 
 public class HtmlParser {
 
-	public void parse(String path) throws IOException{
+	private DBWriter dbWriter;
+
+	public HtmlParser() {
+		dbWriter = new DBWriter();
+	}
+
+
+	public void parseDemo(File file) throws IOException{
 		// note: i had problem when calling Jsoup.parse("path"), so use File
-		File file = new File(path);
+		//		File file = new File(path);
 		Document doc = Jsoup.parse(file, "UTF-8"); // todo: UTF-8 ok for real data?
 		Element body = doc.body();
 		Elements tables = body.getElementsByTag("table"); // not "<table>"
 		Element table = tables.first(); // suppose the html file includes only one table
-		
+
 		Elements lines = table.getElementsByTag("tr");
 		// handle first <tr> element, this is header
 		Element head = lines.first();
 		// create table scheme in database
-		handleHeader(head);
-		
+		//handleHeader(head);
+		createTable();
+
 		// traverse other <tr> elements
 		for(int i = 1; i < lines.size(); i++){ //start from the second line
 			Element tr = lines.get(i);
 			// read td elements and add one more line to the table in db
 			System.out.println("hit a <tr> element");
-			handleOneLine(tr);
+			insertOneLine(tr);
+		}
+
+	}
+
+	/* assume the scheme is fixed */
+	public void parseTheRawReport(File file) throws IOException{
+		// note: i had problem when calling Jsoup.parse("path"), so use File
+		Document doc = Jsoup.parse(file, "UTF-8"); // todo: UTF-8 ok for real data?
+		Element body = doc.body();
+
+		/* the html source is like:
+		 * <table>
+		 * 		<tr> 	title 				</tr>
+		 * 		<tr> 	table header		</tr>
+		 * 		<tr> 	first row of data 	</tr>
+		 * 		...
+		 * </table> 
+		 */
+		Elements tables = body.getElementsByTag("table"); // not "<table>"
+		Element table = tables.first(); // suppose the html file includes only one table
+
+		Elements lines = table.getElementsByTag("tr");
+		dbWriter.open(); // do not forget close
+		createTable();
+
+		// traverse other <tr> elements
+		for(int i = 2; i < lines.size(); i++){ //start from the third line
+			Element tr = lines.get(i);
+			/* 1) some rows include empty cell, actually these <tr> has less <td>
+			 * 2) the last row of the table are invalid, its' first several columns are empty
+			 * 3) the several summaries at the bottom and outside the table when you view the html file in brwoser are <tr> too ! 
+			 * ignore these invalid line, they share this trait: number of <td> < number of table columns
+			 */
+			if(TableFormat.TheRawReport.isValidRow(tr)){
+				insertOneLine(tr);
+				System.out.println("counter: " + i);
+			}
+		}
+		dbWriter.close();
+		System.out.println("parseTheRawReport done");
+
+	}
+
+	private void createTable(){
+		/* careful: add enough blank space */
+		String columnNamesAndTypes = " "
+				+ TableFormat.TheRawReport.columnNames[0]
+				+ " "
+				+ TableFormat.TheRawReport.columnTypes[0]
+				+ " primary key, ";
+		
+		int i = 1;
+		for(; i < TableFormat.TheRawReport.columnNames.length-1; i++) {
+			columnNamesAndTypes += " " 
+					+ TableFormat.TheRawReport.columnNames[i]
+					+ " "
+					+ TableFormat.TheRawReport.columnTypes[i]
+					+ " , ";
+		}
+		// i points to the last element of array now
+		columnNamesAndTypes += " " 
+				+ TableFormat.TheRawReport.columnNames[i]
+				+ " "
+				+ TableFormat.TheRawReport.columnTypes[i]
+				+ " "; // no , for the last column
+
+		String command = "create table " + TableFormat.TheRawReport.tableNameInDB
+				+ " ( " + columnNamesAndTypes + " ) ";
+
+		/* drop the old one if exist already */
+		dbWriter.execCommand("drop table if exists " + TableFormat.TheRawReport.tableNameInDB);
+		dbWriter.execCommand(command);
+	}
+
+	private void insertOneLine(Element line){ // handle non-header line
+		Elements columns = line.getElementsByTag("td");
+		assert(columns.size() == TableFormat.TheRawReport.columnNames.length);
+		
+		String values = "";
+		int i = 0;
+		for(; i < columns.size()-1; i++){ // leave the last item
+			String thisColValue = columns.get(i).html();
+			thisColValue = TableFormat.TheRawReport.fillBlankCellAndAddQuoteForText(thisColValue, i);
+			values += thisColValue + " , ";
 		}
 		
+		String lastColValue = columns.get(i).html();
+		lastColValue = TableFormat.TheRawReport.fillBlankCellAndAddQuoteForText(lastColValue, i);
+		values += lastColValue; // no , for the last value
+		String command = "insert into " + TableFormat.TheRawReport.tableNameInDB
+				+ " values ( "
+				+ values
+				+ " ) ";
+		dbWriter.execCommand(command);
 	}
-	
-	private void handleHeader(Element head){
-		Elements columns = head.getElementsByTag("th"); // i had problems when call getAllElements
-		for(Element column: columns){
-			String data = column.html(); //do not call .data()
-			System.out.println(data);
-		}
-	}
-	
-	private void handleOneLine(Element line){ // handle non-header line
-		Elements columns = line.getElementsByTag("td");
-		for(Element column: columns){
-			String data = column.html();
-			int i = Integer.parseInt(data);
-			System.out.println(i);
-		}
-	}
-	
+
 	/**
 	 * @param args
 	 * @throws IOException 
 	 */
 	public static void main(String[] args) throws IOException {
 		// TODO Auto-generated method stub
-		new HtmlParser().parse("D:/coding/gkfx/gkfx_test.html");
+		//	new HtmlParser().parse("D:/coding/windows/gkfx/gkfx_test.html");
+		new HtmlParser().parseDemo(new File("D:/coding/windows/gkfx/gkfx_test.html"));
 		System.out.println("parse done");
 
 	}
-
 }

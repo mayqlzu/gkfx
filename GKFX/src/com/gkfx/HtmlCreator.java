@@ -50,6 +50,7 @@ public class HtmlCreator {
 				out = new BufferedWriter(new FileWriter("output.html"));
 				out.write(resultHtml);
 				out.close();
+				System.out.println("check the output file: output.html");
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
