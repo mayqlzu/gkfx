@@ -12,11 +12,11 @@ import org.jsoup.nodes.Element;
 /* 
  * sqlite query result set(table) -> dom tree -> file
  */
-public class HtmlCreator {
+public class HtmlWriter {
 	Document doc;
 	Element table;
 	
-	HtmlCreator(){
+	HtmlWriter(){
     		String basicHtml = ""; /* Jsoup will create closed <html> and <body> for you */
     		doc = Jsoup.parse(basicHtml); 
     		table = doc.select("body").first().appendElement("table");
@@ -69,7 +69,7 @@ public class HtmlCreator {
 		File file = new File(dirName + "/" + fileName);
 		 */
 		
-		HtmlCreator c = new HtmlCreator();
+		HtmlWriter c = new HtmlWriter();
 		c.addTableHeader();
 		for(int i=0; i<10; i++){
 			c.addOneLineOfData();

@@ -6,6 +6,7 @@ import java.awt.event.ActionListener;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import javax.swing.DefaultListModel;
 import javax.swing.JButton;
@@ -18,16 +19,21 @@ public class Main extends JFrame implements ActionListener{
 	/**
 	 * 
 	 */
-	private static final long serialVersionUID = 1L;
-	private JList fileList;
-	private JTextArea statusArea;
-	private ArrayList<File> files = new ArrayList<File>();
-	private HtmlParser htmlParser;
-	private ExcelParser excelParser;
+	private JList 						m_fileList;
+	private JTextArea 					m_statusArea;
+	private ArrayList<File> 			m_files;
+	private HtmlParser 					m_htmlParser;
+	private HtmlWriter 					m_htmlWriter;
+	private ExcelParser 				m_excelParser;
+	private ExcelWriter					m_excelWriter;
+	private ArrayList<Deal>				m_deals;
+	private HashMap<String, Customer>	m_customers;  //use HashMap to group deals by customer
+	private HashMap<String, IB>			m_ibs;		  //use HashMap to group customers by ib
+	private HashMap<String, String>		m_customerIBMap;
+	private	HashMap<String,	Markup>		m_customerMarkupMap;
 	
-	
-	JButton button_choose_files;
-	JButton button_go;
+	JButton m_button_choose_files;
+	JButton m_button_go;
 	
 	
 	Main(){
@@ -46,35 +52,41 @@ public class Main extends JFrame implements ActionListener{
 		listModel.addElement("test file3");
 
 
-		fileList = new JList(listModel);
+		m_fileList = new JList(listModel);
 //		fileList = new JList(data);
 //		 fileList = new JList();
 		
-		button_choose_files = new JButton("load file");
-		button_choose_files.addActionListener(this);
+		m_button_choose_files = new JButton("load file");
+		m_button_choose_files.addActionListener(this);
 		
-		button_go = new JButton("go");
-		button_go.addActionListener(this);
+		m_button_go = new JButton("go");
+		m_button_go.addActionListener(this);
 		
-		statusArea = new JTextArea("status message");
+		m_statusArea = new JTextArea("status message");
 		
-		add(fileList);
-		add(button_choose_files);
-		add(button_go);
-		add(statusArea);
+		add(m_fileList);
+		add(m_button_choose_files);
+		add(m_button_go);
+		add(m_statusArea);
 		
 		validate(); // can not show without it.
 		
-		htmlParser = new HtmlParser();
+		m_files			=	new ArrayList<File>();
+		m_htmlParser 	=	new HtmlParser();
+		m_htmlWriter	= 	new HtmlWriter();
+		m_excelParser	=	new ExcelParser();
+		m_excelWriter	=	new ExcelWriter();
+		// do NOT new deals here, return from HtmlParser
+		
 	}
 	
 	public void updateStatus(String message) {
-		statusArea.setText(message);
+		m_statusArea.setText(message);
 	}
 
 	/* assume we have only one html file */
 	private File getTheRawReport() {
-		for(File f : files) {
+		for(File f : m_files) {
 			String suffix = Tools.getFileNameSuffix(f.getName());
 			if(suffix.equals("html")) {
 				return f;
@@ -86,7 +98,7 @@ public class Main extends JFrame implements ActionListener{
 	
 	@Override
 	public void actionPerformed(ActionEvent e) {
-		if(e.getSource().equals(button_choose_files)) {
+		if(e.getSource().equals(m_button_choose_files)) {
 			// TODO Auto-generated method stub
 			FileChooser fileChooser = new FileChooser();
 			File[] files_this_time = fileChooser.getChoosedFiles();
@@ -96,12 +108,12 @@ public class Main extends JFrame implements ActionListener{
 				System.out.println("choosed some files");
 				
 				/* add files into list */
-				DefaultListModel listModel = (DefaultListModel) fileList.getModel();
+				DefaultListModel listModel = (DefaultListModel) m_fileList.getModel();
 //				listModel.addElement("test file");
 				for(File f : files_this_time){ /* keyword 'for' is so nice :) */
 					listModel.addElement(f.getAbsolutePath());
 					/* save file in arrayList, todo:exclude the duplicated files */
-					files.add(f);
+					m_files.add(f);
 				}
 				updateStatus("load file, done.");
 				
@@ -114,34 +126,120 @@ public class Main extends JFrame implements ActionListener{
 				*/
 			}
 		}
-		else if(e.getSource().equals(button_go)) {
+		else if(e.getSource().equals(m_button_go)) {
 				System.out.println("button go clicked");
-				/* user contact: source files are named as:
-				 * Raw Report CAH.html
-				 * IB_customer.excel
-				 * IB_commission.excel
-				 * ...
-				 */
-	
-				try {
-					/* assume we have only one html file */
-					htmlParser.parseTheRawReport(getTheRawReport());
-				} catch (IOException e1) {
-					// TODO Auto-generated catch block
-					e1.printStackTrace();
-				} 
 				
-//				excel.parse(file1);
-//				excel.parse(file2);
-//				excel.parse(file3);
+				initAllDeals();
 				
+				if(false = isInputEnough()){
+					return; // do nothing for this event handling loop
+				}
 				
-				/* query and create table in DB */
+				initAllCustomers();
+				initAllIBs();
 				
-				/* output the table in DB as excel or html */
+				// this condition is rough, same parms will be determined after counting vol by individual IB
+				setConditionForAllIBs();
 				
+				computeFeeForEveryIB();
+				m_excelWriter.printFinalReport(m_ibs);
+				m_htmlWriter.printFinalReport(m_ibs); // can i convert excel result to html result ?
+				
+				System.out.println("final report generated :)");
 		}
 	}
+	
+	private void setConditionForAllIBs(){
+		// IB_ID -> Condition
+		HashMap<String, Condition> ibConditionMap = m_excelParser.generateIBConditionMap();
+		ArrayList<IB> ibList = (ArrayList<IB>) m_ibs.values();
+		for(IB ib: ibList){
+			Condition c = ibConditionMap.get(ib.getID());
+			assert(null != c);
+			ib.setCondition(c);
+		}
+	}
+	
+	private boolean isInputEnough(){
+		todo
+		// pop dialog if input is not enough,
+		// hint customers to provider all missing input
+
+	}
+	
+	// deals will be affected
+	private void initAllDeals(){
+		File rawReportHtmlFile = this.getTheRawReport();
+		try {
+			// m_deals will be newed by callee
+			m_deals =	this.m_htmlParser.readTheRawReport(rawReportHtmlFile);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+	
+	
+	
+	// ibs will be affected
+	private void initAllIBs(){
+		this.initCustomerIBMap();
+		assert(null != m_customers && null != m_customerIBMap);
+		
+		ArrayList<Customer> cuslist = new ArrayList<Customer>(m_customers.values());
+		m_ibs = new HashMap<String, IB>();
+		for(Customer c : cuslist)	{
+			String IBCode = this.m_customerIBMap.get(c.getLogin());
+			
+			IB existentIB = m_ibs.get(IBCode);
+			if(null == existentIB){
+				// not found
+				IB newIB = new IB(IBCode);
+				newIB.addCustomer(c);
+				m_ibs.put(IBCode, newIB);
+			}else{
+				// found
+				existentIB.addCustomer(c);
+			}
+		}
+	}
+	
+	private void initCustomerIBMap(){
+		// excelParser will new object inside
+		m_customerIBMap = m_excelParser.generateCustomerIBMap();
+	}
+	
+	private void computeFeeForEveryIB(){
+		ArrayList<IB> list = new ArrayList<IB>(m_ibs.values());
+		for(IB ib : list){
+			ib.computeIncome();
+		}
+	}
+	
+	
+	
+	// customers will be affected, elements of deals will be grouped and passed into elements of customers
+	private void initAllCustomers(){
+		// we have filtered invalid lines already
+		
+		assert(null != m_deals);
+		
+		m_customers = new HashMap<String, Customer>();
+		for(Deal thisDeal: m_deals){
+			String login = thisDeal.getLogin();
+			Customer existentCus = m_customers.get(login);
+			if(null == existentCus){
+				// not found
+				Customer newCustomer = new Customer(login);
+				newCustomer.addDeal(thisDeal);
+				m_customers.put(login, newCustomer);
+			}else{
+				// found
+				existentCus.addDeal(thisDeal);
+			}
+		}
+	}
+	
 
 	/**
 	 * @param args

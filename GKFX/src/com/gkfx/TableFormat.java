@@ -89,6 +89,21 @@ public class TableFormat {
 			else
 				return false;
 		}
+		
+		public static int getColumnIndexByName(String colName) {
+			if(colName.equals("Login"))
+				return 1;
+			else if(colName.equals("Symbol"))
+				return 4;
+			else if(colName.equals("Volume"))
+				return 5;
+			else{
+				System.out.println(
+						"TableFormat:getColumnIndexByName(): failed to map column name to index");
+				return -1;
+			}
+			
+		}
 	}
 
 	public static class addMoreFilesHere {

@@ -12,7 +12,7 @@ import javax.swing.JFrame;
 
 public class FileChooser {
 	
-	private File[] files;
+	private File[] m_files;
 	
 	FileChooser(){
 		// TODO Auto-generated method stub
@@ -26,15 +26,15 @@ public class FileChooser {
         int returnValue = file_chooser.showOpenDialog(null);
         if (returnValue == JFileChooser.APPROVE_OPTION)
         {  
-        	files = file_chooser.getSelectedFiles();
-        	System.out.println("file choosed: "+ files[0].toString());
+        	m_files = file_chooser.getSelectedFiles();
+        	System.out.println("file choosed: "+ m_files[0].toString());
         }else{
-        	files = null;
+        	m_files = null;
         }
 	}
 	
 	public File[] getChoosedFiles(){
-		return files;
+		return m_files;
 	}
 
 	public static void main(String[] args) {
