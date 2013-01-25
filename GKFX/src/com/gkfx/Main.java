@@ -680,8 +680,14 @@ public class Main extends JFrame implements ActionListener{
 			}
 		}
 		
+		/* 
+		 * convert to million
+		 * in condition file: index_rebate_volume_million_USD=1 means 1 million USD
+		 * so they match
+		 */
+		float silverOilIndexValueSumMillion = silverOilIndexValueSum/1000000f;
 		// save
-		m_ibParamMap.put(ib, new IBParam(fxGoldSlotSum, silverOilIndexValueSum));
+		m_ibParamMap.put(ib, new IBParam(fxGoldSlotSum, silverOilIndexValueSumMillion));
 	}
 	
 	private float getValPerSlotForThisSilverOrOilDeal(Deal silverOrOilDeal){
@@ -1113,14 +1119,14 @@ public class Main extends JFrame implements ActionListener{
 			
 		// yes, use indexRebateVolMillionUSD from table as silverOilIndexValSum range
 		float[] range = cond.getIndexRebateVolMillionUSD();
-		float silverOilIndexValueSum = getSilverOilIndexValueSumForThisSilverOilOrIndexDeal(
+		float silverOilIndexValueSumMillion = getSilverOilIndexValueSumMillionForThisSilverOilOrIndexDeal(
 											silverOrOilDeal);
-		float quotaOrPercent = this.getValByRange(vals, range, silverOilIndexValueSum);
+		float quotaOrPercent = this.getValByRange(vals, range, silverOilIndexValueSumMillion);
 		return quotaOrPercent;
 	}
 	
-	private float getSilverOilIndexValueSumForThisSilverOilOrIndexDeal(Deal silverOilOrIndexDeal){
-		return m_ibParamMap.get(silverOilOrIndexDeal.getIB()).getM_silverOilIndexValueSum();
+	private float getSilverOilIndexValueSumMillionForThisSilverOilOrIndexDeal(Deal silverOilOrIndexDeal){
+		return m_ibParamMap.get(silverOilOrIndexDeal.getIB()).getM_silverOilIndexValueSumMillion();
 	}
 	
 	private WAY getRebateComputationWayForThisCommodDeal(Deal commodDeal){
@@ -1222,11 +1228,11 @@ public class Main extends JFrame implements ActionListener{
 	 * so, you should remember to divide 0.0035 by 100 when using
 	 */
 	private float getRebatePercentForThisIndexDeal(Deal indexDeal){
-		float silverOilIndexValueSum = this.getSilverOilIndexValueSumForThisSilverOilOrIndexDeal(indexDeal);
+		float silverOilIndexValueSumMillion = this.getSilverOilIndexValueSumMillionForThisSilverOilOrIndexDeal(indexDeal);
 		Condition cond = this.getConditionByGroupID(indexDeal.getGroup());
 		float[] vals = cond.getIndexRebatePercent();
 		float[] range = cond.getIndexRebateVolMillionUSD();
-		float percent = this.getValByRange(vals, range, silverOilIndexValueSum);
+		float percent = this.getValByRange(vals, range, silverOilIndexValueSumMillion);
 		return percent;
 	}
 	

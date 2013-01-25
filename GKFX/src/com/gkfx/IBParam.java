@@ -2,27 +2,21 @@ package com.gkfx;
 
 public class IBParam {
 	private float m_fxGoldSlotSum;
-	private float m_silverOilIndexValueSum;
+	private float m_silverOilIndexValueSumMillion; // 1 means 1 million USD
 	
-	public IBParam(float m_fxGoldSlotSum, float m_silverOilIndexValueSum) {
+	public IBParam(float m_fxGoldSlotSum, float m_silverOilIndexValueSumMillion) {
 		super();
 		this.m_fxGoldSlotSum = m_fxGoldSlotSum;
-		this.m_silverOilIndexValueSum = m_silverOilIndexValueSum;
+		this.m_silverOilIndexValueSumMillion = m_silverOilIndexValueSumMillion;
 	}
 	
 	public float getM_fxGoldSlotSum() {
 		return m_fxGoldSlotSum;
 	}
-	public void setM_fxGoldSlotSum(float m_fxGoldSlotSum) {
-		this.m_fxGoldSlotSum = m_fxGoldSlotSum;
-	}
-	public float getM_silverOilIndexValueSum() {
-		return m_silverOilIndexValueSum;
-	}
-	public void setM_silverOilIndexValueSum(float m_silverOilIndexValueSum) {
-		this.m_silverOilIndexValueSum = m_silverOilIndexValueSum;
-	}
 	
+	public float getM_silverOilIndexValueSumMillion() {
+		return m_silverOilIndexValueSumMillion;
+	}
 	
 
 }
