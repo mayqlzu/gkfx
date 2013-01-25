@@ -25,9 +25,12 @@ public class MyFileFilter extends FileFilter {
 	@Override
 	public boolean accept(File f) {
 		// TODO Auto-generated method stub
+		if(f.isDirectory())
+			return true;
+		
 		String extension = getExtension(f);
 
-		if(extension.equalsIgnoreCase("html") || extension.equalsIgnoreCase("xlsx"))
+		if(extension.equalsIgnoreCase("htm") || extension.equalsIgnoreCase("xlsx"))
 			return true;
 		else 
 			return false;

@@ -19,7 +19,9 @@ public class FileChooser {
 //		files = null;  java will init it as null automatically :)
 //		System.out.println(files);
 		
-		JFileChooser file_chooser = new JFileChooser("D:/coding/windows/gkfx");
+		JFileChooser file_chooser = new JFileChooser("D:/coding/windows/gkfx/tables-from-jeffery/Input_New/forTest");
+		//String workingDir = System.getProperty("user.dir");
+		//JFileChooser file_chooser = new JFileChooser(workingDir);
 		file_chooser.setMultiSelectionEnabled(true);
 		file_chooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
 		file_chooser.setFileFilter(new MyFileFilter());

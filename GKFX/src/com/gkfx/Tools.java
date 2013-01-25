@@ -30,4 +30,19 @@ public class Tools
 	public static boolean isNumber(String str) {
 		return str.matches("^-?[0-9]+(\\.[0-9]+)?$");
 	}
+	
+	/*
+	 * quota: pei e
+	 * quote: bao jia
+	 * 
+	 * return BBB from AAABBB
+	 */
+	public static String getQuoteCurrency(String pair){
+		assert(6 == pair.length());
+		return pair.substring(3);
+	}
+	
+	public static String lastTwoCharsOf(String symbol){
+		return  symbol.substring(symbol.length() - 2);
+	}
 }
