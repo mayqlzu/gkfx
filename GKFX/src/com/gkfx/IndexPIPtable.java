@@ -29,8 +29,11 @@ public class IndexPIPtable {
 		else if(symbol.equals("swe30")){
 			return 1/m_rateTable.getRate("usdsek");
 		}
+		else if(symbol.equals("ise30")){
+			return 1/m_rateTable.getRate("usdtry");
+		}
 		else{
-			System.out.println("IndexPIPtable: getPIPbySymbol(): invalid symbol");
+			System.out.println("IndexPIPtable: getPIPbySymbol(): invalid symbol " + symbol);
 			return 0;
 		}
 				

@@ -259,17 +259,29 @@ public class Main extends JFrame implements ActionListener{
 			m_activeGroups = collectAllActiveGroupsFrom(m_deals);
 		}
 		
+		// check and collect
+		HashSet<String> groupsNoCondition = new HashSet<String>();
 		Iterator<String> itor = m_activeGroups.iterator();
 		while(itor.hasNext()){
 			String group = itor.next();
 			Condition condition = m_groupConditionMap.get(group);
 			if(null == condition){
-				System.out.println("ERROR: map group to Condition failed for: " + group );
-				appendLog("ERROR: Condition info for group: " + group + " not found" );
-				return false;
+				groupsNoCondition.add(group);
 			}
 		}
-		return true;
+		
+		// print
+		if(groupsNoCondition.isEmpty()){
+			return true;
+		}else{
+			Iterator<String> gItor = groupsNoCondition.iterator();
+			while(gItor.hasNext()){
+				String group = gItor.next();
+				System.out.println("ERROR: map group to Condition failed for: " + group );
+				appendLog("ERROR: Condition info for group: " + group + " not found" );
+			}
+			return false;
+		}
 	}
 	
 	/* 
@@ -312,17 +324,29 @@ public class Main extends JFrame implements ActionListener{
 	private boolean checkClientGroupMapCompletion(){
 		m_activeClients = collectAllClientsAppearIn(m_deals);
 		Iterator<String> itor = m_activeClients.iterator();
+		HashSet<String>	clientsNoGroupInfo = new HashSet<String>();
+		// check and collect
 		while(itor.hasNext()){
 			String client = itor.next();
 			String group = m_clientGroupMap.get(client);
 			if(null == group){
-				System.out.println("ERROR: map client to group failed for: " + client );
-				appendLog("ERROR: Group info for client: " + client + " not found" );
-				return false;
+				clientsNoGroupInfo.add(client);
 			}
 		}
 		
-		return true;
+		// print
+		if(clientsNoGroupInfo.isEmpty()){
+			return true;
+		}else{
+			Iterator<String> clientsItor = clientsNoGroupInfo.iterator();
+			while(clientsItor.hasNext()){
+				String client = clientsItor.next();
+				System.out.println("ERROR: map client to group failed for: " + client );
+				appendLog("ERROR: Group info for client: " + client + " not found" );
+			}
+			return false;
+		}
+		
 	}
 	
 	HashSet<String> collectAllClientsAppearIn(ArrayList<Deal> deals){
@@ -390,6 +414,11 @@ public class Main extends JFrame implements ActionListener{
 		for(Deal d: m_deals){
 			if(d.isFx()){
 				String quoteCurrency = Tools.getQuoteCurrency(d.getSymbol());
+				if(quoteCurrency.contains(".")){
+					System.out.println(d.getSymbol());
+					System.exit(0);
+				}
+					
 				if(quoteCurrency.equals("usd")){
 					continue;
 				}else if(quoteCurrency.equals("eur") // forward offer
@@ -416,8 +445,15 @@ public class Main extends JFrame implements ActionListener{
 					neededExRates.add("usdchf");
 				}else if(symbol.equals("swe30")){
 					neededExRates.add("usdsek");
+				}else if(symbol.equals("ise30")){
+					neededExRates.add("usdtry");
+				}else if(symbol.equals("sp500")
+						|| symbol.equals("ws30")
+						|| symbol.equals("nas100")
+						|| symbol.equals("russ")){
+					continue;
 				}else{
-					System.out.println("jeffery's index list is not completed!");
+					System.out.println("jeffery's index list is not completed!, unknown index symbol: " + symbol);
 				}
 			}else if(d.isStock()){
 				String symbol = d.getSymbol();
@@ -432,6 +468,8 @@ public class Main extends JFrame implements ActionListener{
 					neededExRates.add("eurusd");
 				}else if(lastTwoChars.equals("ch")){
 					neededExRates.add("usdchf");
+				}else if(lastTwoChars.equals("us")){
+					continue;
 				}else{
 					System.out.println("jeffery's stock market list is not completed!");
 				}

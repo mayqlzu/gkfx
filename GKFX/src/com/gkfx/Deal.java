@@ -46,19 +46,49 @@ public class Deal {
 
 	public static Deal makeADeal(ArrayList<String> aDealRecord){
 		String[] array = (String[])aDealRecord.toArray(new String[0]);
-		String vol = array[5];
-		//System.out.println("debug, check vol = "+ vol);
+		
+		String symbol = array[4];
+		// you may meet bad symbols end with a dot, ex: "eurusd."
+		symbol = takeCareOfBadSymbol(symbol);
+		
+		String volStr = array[5];
+		// System.out.println("debug, check vol = "+ vol);
+		// the volume may be 1k, 2k ..., so take care of it if so;
+		float volFloat = takeCareOfVolumeIfXK(volStr);
 		return new Deal(
 				array[0], 					// deal id
 				array[1],					// login
-				array[4],					// symbol
-				Float.parseFloat(array[5]),	// volume
+				symbol, 					// symbol
+				volFloat,						// volume
 				array[2],					// open time
 				array[9],					// close time
 				Float.parseFloat(array[10])	// close price
 				);
 	}
 	
+	// input: bad symbol end with a dot, ex: "eurusd."
+	private static String takeCareOfBadSymbol(String sym){
+		String lastChar = sym.substring(sym.length()-1);
+		if(lastChar.equals(".")){
+			return sym.substring(0, sym.length()-1);
+		}else
+			return sym;
+	}
+	
+	/*
+	 * 1.00 => 1.00 did not change;
+	 * 1k   => 1000.00
+	 */
+	private static float takeCareOfVolumeIfXK(String vol){
+		String lastChar = vol.substring(vol.length()-1);
+		if (lastChar.equals("K")){ // upper case
+			String valStr = vol.substring(0, vol.length()-1); // "2.00k" => "2.00"
+			float val = Float.parseFloat(valStr);	// "2.00" => 2.00
+			return val * 1000;
+		}else{
+			return Float.parseFloat(vol);
+		}
+	}
 
 	private String lastTwoCharsOfSymbol(){
 		assert(m_symbol.length() >= 2);

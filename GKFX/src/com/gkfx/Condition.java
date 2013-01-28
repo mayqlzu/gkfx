@@ -2,9 +2,10 @@ package com.gkfx;
 
 // every Group has such a Condition object
 public class Condition {
-	public static final int USEFUL_COL_NUM = 35;
+	public static final int LAST_COL_INDEX = 36; // include column "Note"
 	
 	private	String	groupID;		// 'IB Code' in file
+	//private String[] note;   		// do NOT read this column for now;
 	private float[] fxCommVol; 		// fx Commodity volume sum
 	private WAY		fxRebateType;	// 1=pip; 2=fix
 	
@@ -48,12 +49,15 @@ public class Condition {
 	private float[] commOilMarkupPIP;
 	private float[] indexMarkupPIP;
 	
-	//private String[] note;  do NOT read this column for now;
 	
 	public Condition(Object[] arr){ // two many params, pack as an Array
-		assert(USEFUL_COL_NUM == arr.length); 	// check column numbers
+		if(LAST_COL_INDEX-1 != arr.length){
+			System.out.println("Condition(): LAST_COL_INDEX-1 != arr.length, arr.length=" + arr.length);
+			//System.exit(0);
+		}
 		
 		groupID							= (String)	arr[0];
+		// note							excluded from in-param
 		fxCommVol						= (float[]) arr[1];
 		fxRebateType					= (1 == ((float[])arr[2])[0]) ? WAY.POINT : WAY.QUOTA; // 1=pip; 2=fix
 		

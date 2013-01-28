@@ -44,6 +44,7 @@ public class HtmlParser {
 			// skip some invalid rows, we don't worry about invalid lines anymore :)
 			Elements tds = tr.getElementsByTag("td");
 			if(tds.size() == TableFormat.TheRawReport.columnNames.length){
+				// todo: if filtered all invalid rows? ex: buy stop, sell stop, credit, balance ?
 				ArrayList<String> newRow = new ArrayList<String>();
 				for(int j = 0; j < tds.size(); j++){
 					String htmlCellValue = tds.get(j).html();

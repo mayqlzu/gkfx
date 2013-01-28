@@ -322,18 +322,20 @@ public class ExcelIO {
 				
 				/*
 				 * skip same 3-row area, in which all cells are blank
-				 * check cell[row1, col-B] as flag
+				 * check cell[row1, col-C] as flag
 				 * 
 				 * when handle blank cells, getCell() will return null, so we should check cell pointer before call cell.getCellType()
 				 */
-				if(null == row1.getCell(1) || Cell.CELL_TYPE_BLANK == row1.getCell(1).getCellType())
+				Cell cell_C = row1.getCell(2);
+				if(null == cell_C || Cell.CELL_TYPE_BLANK == cell_C.getCellType())
 					continue;
 
 				ArrayList<Object> oneGroupData = new ArrayList<Object>();
 				String groupID = row1.getCell(0).getStringCellValue();
 				groupID = this.removeAllBlankSpace(groupID); //user may input typo
 				oneGroupData.add(groupID);
-				for(int col=1; col < Condition.USEFUL_COL_NUM; col++){
+				// skip column "Note"
+				for(int col=2; col < Condition.LAST_COL_INDEX; col++){
 					/*
 					 *   			col
 					 *   			 |
@@ -363,7 +365,7 @@ public class ExcelIO {
 					if(rowIndex == 577 && col == 1)
 						System.out.println(data1 + " " + data2 + " " +data3);
 					// check the three cell on bottom-right corner
-					if(rowIndex == 577 && col == Condition.USEFUL_COL_NUM-1)
+					if(rowIndex == 577 && col == Condition.LAST_COL_INDEX-1)
 						System.out.println(data1 + " " + data2 + " " +data3);
 						
 					oneGroupData.add(threeValOfCurrentCol);

@@ -26,7 +26,7 @@ public class FxGroups {
 				"GBPPLN", "GBPSAR", "BGPTRY", "GBPZAR", "HKDJPY", "MXNJPY", "SARJPY", "SGDTHB", "SGDZAR", "THBJPY", "USDCZK", "USDMXN",
 				"USDSEK", "USDZAR", "ZARJPY", "GBPTRY", "GBPZAR"};
 		
-		String[] F = new String[]{}; // todo: what are in group F ?
+		String[] F = new String[]{"AUDDKK"};
 		
 		
 		for(String s: A){

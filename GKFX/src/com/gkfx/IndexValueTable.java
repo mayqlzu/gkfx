@@ -13,37 +13,40 @@ public class IndexValueTable {
 		float valPerSlot;
 		
 		if(symbol.equals("uk100")){
-			valPerSlot = 100 * m_exRateTable.getRate("gbpusd") * closePrice;
+			valPerSlot = m_exRateTable.getRate("gbpusd") * closePrice;
 		}
 		else if(symbol.equals("esx50")){
-			valPerSlot = 100 * m_exRateTable.getRate("eurusd") * closePrice;
+			valPerSlot = m_exRateTable.getRate("eurusd") * closePrice;
 		}
 		else if(symbol.equals("dax30")){
-			valPerSlot = 100 * m_exRateTable.getRate("eurusd") * closePrice;
+			valPerSlot = m_exRateTable.getRate("eurusd") * closePrice;
 		}
 		else if(symbol.equals("sp500")){
-			valPerSlot = 500 * m_exRateTable.getRate("eurusd") * closePrice;
+			valPerSlot = m_exRateTable.getRate("eurusd") * closePrice;
 		}
 		else if(symbol.equals("ws30")){
-			valPerSlot = 100 * closePrice;
+			valPerSlot = closePrice;
 		}
 		else if(symbol.equals("nas100")){
-			valPerSlot = 200 * closePrice;
+			valPerSlot = closePrice;
 		}
-		else if(symbol.equals("nas100")){
-			valPerSlot = 500 * closePrice;
+		else if(symbol.equals("russ")){
+			valPerSlot = closePrice;
 		}
 		else if(symbol.equals("aex25")){
-			valPerSlot = 250 * m_exRateTable.getRate("eurusd") * closePrice;
+			valPerSlot = m_exRateTable.getRate("eurusd") * closePrice;
 		}
 		else if(symbol.equals("cac40")){
-			valPerSlot = 100 * m_exRateTable.getRate("eurusd") * closePrice;
+			valPerSlot = m_exRateTable.getRate("eurusd") * closePrice;
 		}
 		else if(symbol.equals("smi20")){
-			valPerSlot = 100 / m_exRateTable.getRate("usdchf") * closePrice;
+			valPerSlot = 1 / m_exRateTable.getRate("usdchf") * closePrice;
 		}
 		else if(symbol.equals("swe30")){
-			valPerSlot = 100 / m_exRateTable.getRate("usdsek") * closePrice;
+			valPerSlot = 1 / m_exRateTable.getRate("usdsek") * closePrice;
+		}
+		else if(symbol.equals("ise30")){
+			valPerSlot = 1 / m_exRateTable.getRate("usdtry") * closePrice;
 		}
 		else{
 			valPerSlot = 0;
