@@ -312,7 +312,7 @@ public class ExcelIO {
 			assert(0 == (lastRowIndex+1-1)%3);
 			if(0 != (lastRowIndex+1-1)%3){
 				System.out.println("ERROR: Group-Condition table is invalid, rowNum != 3n+1");
-				System.exit(0);
+				return null; // tell caller failed
 			}
 			
 			for(int rowIndex = 1; rowIndex < lastRowIndex; rowIndex = rowIndex+3) { // skip first head line
@@ -374,13 +374,9 @@ public class ExcelIO {
 			}
 			file.close();
 			System.out.println("read excel file done");
-		} catch (FileNotFoundException e) {
+		} catch (Exception e) {
 			e.printStackTrace();
-		} catch (IOException e) {
-			e.printStackTrace();
-		} catch (InvalidFormatException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			return null; // indicate failed for caller
 		}
 		
 		//System.out.println(map.size());
@@ -471,15 +467,10 @@ public class ExcelIO {
 			}
 			file.close();
 			System.out.println("read excel file done");
-		} catch (FileNotFoundException e) {
+		} catch (Exception e) {
 			e.printStackTrace();
-		} catch (IOException e) {
-			e.printStackTrace();
-		} catch (InvalidFormatException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			return null;
 		}
-		
 		
 		return new ExRateTable(map);
 		
@@ -564,13 +555,8 @@ public class ExcelIO {
 			}
 			file.close();
 			System.out.println("read excel file done");
-		} catch (FileNotFoundException e) {
-			e.printStackTrace();
-		} catch (IOException e) {
-			e.printStackTrace();
-		} catch (InvalidFormatException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+		} catch (Exception e) {
+			return null;
 		}
 		return map;
 	}

@@ -132,6 +132,10 @@ public class Main extends JFrame implements ActionListener{
 	public void appendLog(String message) {
 		m_statusArea.append(message + "\n");
 	}
+	
+	private void clearLog(){
+		m_statusArea.setText(null);
+	}
 
 	@Override
 	public void actionPerformed(ActionEvent e) {
@@ -170,6 +174,8 @@ public class Main extends JFrame implements ActionListener{
 			
 			while(!m_files.isEmpty())
 				m_files.remove(0);
+			
+			this.clearLog();
 		}
 		else if(e.getSource().equals(m_button_go)) {
 				System.out.println("button go clicked");
@@ -370,8 +376,8 @@ public class Main extends JFrame implements ActionListener{
 		
 		if(missingFileNames.size() > 0){
 			for(String s: missingFileNames){
-				System.out.println("missing file: " + s);
-				this.appendLog("ERROR: missing file: " + s);
+				System.out.println("file: " + s +" not found!");
+				this.appendLog("ERROR: file: " + s + " not found!");
 			}
 			return false;
 		}
@@ -451,7 +457,7 @@ public class Main extends JFrame implements ActionListener{
 			HashMap<String, Float> providedAndMissing = sumRates(m_exRateTable, missingRates);
 			writeRatesIntoExRateFile(providedAndMissing);
 			System.out.println("complete the Ex Rates Table, and try again!");
-			appendLog("ERROR: " + FILE_NAMES.EX_RATES + " not completed!");
+			appendLog("ERROR: " + FILE_NAMES.EX_RATES + " not completed!, complete it and try again");
 			return false;
 		}
 	}
@@ -525,6 +531,11 @@ public class Main extends JFrame implements ActionListener{
 		/*
 		File f = getFile(FILE_NAMES.IB_GROUP);
 		this.m_groupIBMap = m_excelIO.readIBGroupFile(f);
+		if(null == m_groupIBMap){
+			System.out.println("parse group ib file failed!");
+			appendLog("ERROR: parse " + FILENAMES.IB_GROUP" + " failed");
+			return false;
+		}
 		*/
 		this.m_groupIBMap = new HashMap<String, String>(); //todo: delete it, callee will new obj
 		return true; // todo: check exception
@@ -534,19 +545,34 @@ public class Main extends JFrame implements ActionListener{
 	private boolean parseTheExRateFile(){
 		File f = getFile(FILE_NAMES.EX_RATES);
 		this.m_exRateTable = m_excelIO.readExRateFile(f);
-		return true; // todo: check exception
+		if(null == m_exRateTable){
+			System.out.println("parse exRate file failed!");
+			appendLog("ERROR: parse " + FILE_NAMES.EX_RATES + " failed!");
+			return false;
+		}
+		return true;
 	}
 	
 	private boolean parseTheGroupConditionFile(){
 		File f = getFile(FILE_NAMES.GROUP_CONDITION);
 		m_groupConditionMap = m_excelIO.readGroupConditonFile(f);
-		return true; // todo: check exception
+		if(null == m_groupConditionMap){
+			System.out.println("parse group condition file failed!");
+			appendLog("ERROR: parse " + FILE_NAMES.GROUP_CONDITION + " failed!");
+			return false;
+		}
+		return true;
 	}
 	
 	private boolean parseClientGroupFile(){
 		File f = getFile(FILE_NAMES.GROUP_CLIENT);
 		m_clientGroupMap = m_excelIO.readClientGroupFile(f);
-		return true; // todo: check exception
+		if(null == m_clientGroupMap){
+			System.out.println("parseClientGroupFile failed!");
+			appendLog("ERROR: parse " + FILE_NAMES.GROUP_CLIENT + " failed!");
+			return false;
+		}
+		return true;
 	}
 	
 	private File getFile(String fileName){
@@ -1422,6 +1448,7 @@ public class Main extends JFrame implements ActionListener{
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
+			appendLog("ERROR: parse " + FILE_NAMES.DEAL_RECORD + " failed!");
 			return false;
 		}
 		return true;
