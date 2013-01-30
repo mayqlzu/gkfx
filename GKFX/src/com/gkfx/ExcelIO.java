@@ -246,11 +246,12 @@ public class ExcelIO {
 				else if(obj instanceof Double)
 					cell.setCellValue((Double)obj);
 				else if(obj instanceof Float)
-					cell.setCellValue((Float)obj); // setCellValue CAN handle Float
+					cell.setCellValue(keep2digits((Float)obj)); // setCellValue CAN handle Float
 				else if(obj instanceof Integer)
 					cell.setCellValue((Integer)obj); // setCellValue CAN handle Integer
 			}
 		}
+		
 
 		try {
 			FileOutputStream out = 
@@ -267,6 +268,10 @@ public class ExcelIO {
 
 	}
 	
+	
+	private Float keep2digits(Float val){
+   		return (float)Math.round(val*100)/100;
+	}
 	
 	public HashMap<String, String> readIBGroupFile(File f) {
 		//todo
