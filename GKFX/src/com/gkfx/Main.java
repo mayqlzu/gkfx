@@ -1581,7 +1581,14 @@ public class Main extends JPanel implements ActionListener, PropertyChangeListen
 
         //Display the window.
         frame.setPreferredSize(new Dimension(400, 300));
-        frame.pack();
+        
+        frame.pack(); // pack first and you can get valid height and width, otherwise, you will get 0
+        // put the window in center of screen
+        Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+        int height = frame.getHeight();
+        int width = frame.getWidth();
+        frame.setBounds((screenSize.width-width)/2, (screenSize.height-height)/2, width, height);
+        
         frame.setVisible(true);
     }
     
