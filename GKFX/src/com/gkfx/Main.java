@@ -41,8 +41,7 @@ public class Main extends JPanel implements ActionListener, PropertyChangeListen
 	 * 
 	 */
 	private ArrayList<File> 			m_files;
-	private HtmlParser 					m_htmlParser;
-	private HtmlWriter 					m_htmlWriter;
+	private HtmlIO 						m_htmlIO;
 	private ExcelIO 					m_excelIO;
 	
 	private ArrayList<Deal>				m_deals;
@@ -1362,7 +1361,7 @@ public class Main extends JPanel implements ActionListener, PropertyChangeListen
     		File dealRecordFile = this.getFile(FILE_NAMES.DEAL_RECORD);
     		try {
     			// m_deals will be newed by callee
-    			m_deals =	Main.this.m_htmlParser.readTheDealRecordFile(dealRecordFile);
+    			m_deals =	Main.this.m_htmlIO.readTheDealRecordFile(dealRecordFile);
     		} catch (IOException e) {
     			// TODO Auto-generated catch block
     			e.printStackTrace();
@@ -1481,8 +1480,7 @@ public class Main extends JPanel implements ActionListener, PropertyChangeListen
         panel.add(m_buttonsContainer);
 
 		m_files			=	new ArrayList<File>();
-		m_htmlParser 	=	new HtmlParser();
-		m_htmlWriter	= 	new HtmlWriter();
+		m_htmlIO 		=	new HtmlIO();
 		m_excelIO		=	new ExcelIO();
 		// do NOT new deals here, return from HtmlParser
 		
