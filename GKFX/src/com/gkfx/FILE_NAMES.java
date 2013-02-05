@@ -1,7 +1,7 @@
 package com.gkfx;
 
 public class FILE_NAMES {
-	public static String DEAL_RECORD 		= "Raw Report CAH.htm";
+	public static String DEAL_RECORD 		= "Raw Report.htm";
 //	public static String DEAL_RECORD 		= "Raw Report-micro account.htm";
 //	public static String DEAL_RECORD 		= "Raw Report-Y.htm";
 	public static String EX_RATES 			= "ExRate.xlsx";

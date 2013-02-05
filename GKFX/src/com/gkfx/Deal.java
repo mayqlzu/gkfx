@@ -179,7 +179,6 @@ public class Deal {
 	 * index:  			    0123456789
 	 */
 	public boolean openTimeCloseTimeTooClose(int xMinutes){
-		assert(null != this.m_openTime && null != this.m_closeTime);
 		
 		int yearOpen	=	Integer.parseInt(this.m_openTime.substring(0, 4));	// year
 		int yearClose	=	Integer.parseInt(this.m_closeTime.substring(0, 4));	// year
@@ -196,11 +195,13 @@ public class Deal {
 		int minOpen		=	Integer.parseInt(this.m_openTime.substring(14, 16));	//minute
 		int minClose	=	Integer.parseInt(this.m_closeTime.substring(14, 16));	//minute
 		
-		if(	yearOpen == yearClose
-				&& monthOpen == monthClose
-				&& dayOpen == dayClose
-				&& hourOpen == hourClose
-				&& minClose - minOpen <= xMinutes)
+		// i have some problem when using Calendar, so use deprecated API instead
+		@SuppressWarnings("deprecation")
+		long millisecondsOpen = Date.UTC(yearOpen-1900, monthOpen-1, dayOpen, hourOpen, minOpen, 0);
+		@SuppressWarnings("deprecation")
+		long millisecondsClose = Date.UTC(yearClose-1900, monthClose-1, dayClose, hourClose, minClose, 0);
+		
+		if(	millisecondsClose - millisecondsOpen <= xMinutes * 60 * 1000)
 			return true;
 		else
 			return false;
@@ -251,5 +252,12 @@ public class Deal {
 	public String getGroup() {
 		return this.m_group;
 	}
+	
+    public static void main(String[] args) {
+    	Deal d = new Deal("id", "login", "symbol", 
+    			10f, "2012.11.30 00:00", "2012.11.30 00:03",
+    			10f);
+    	System.out.println(d.openTimeCloseTimeTooClose(2));
+    }
 	
 }
